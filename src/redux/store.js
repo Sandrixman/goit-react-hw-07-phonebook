@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistPhonebookReducer } from './phonebookSlice/slice';
-import { persistLoginReducer } from './loginSlice/slice';
 import {
   persistStore,
   FLUSH,
@@ -14,7 +13,6 @@ import {
 export const store = configureStore({
   reducer: {
     phonebook: persistPhonebookReducer,
-    login: persistLoginReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
