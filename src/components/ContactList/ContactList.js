@@ -1,37 +1,55 @@
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getContacts, getFilter, delContact } from 'redux/phonebookSlice/slice';
+import { phonebookSelectors, phonebookSlice } from 'redux/phonebook/';
+import { fetchContacts, deleteContact } from 'components/services/contactsApi';
+import { Loading } from 'components/Loading/Loading';
 import {
   ContactsList,
   Contact,
-  ContactInfo,
+  ContactName,
+  ContactPhone,
   Button,
 } from './ContactList.styled';
 
 const ContactList = () => {
-  const fullContactsList = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+  const filteredOutContacts = useSelector(
+    phonebookSelectors.takeFilteredOutContacts
+  );
+  const isLoading = useSelector(phonebookSelectors.isLoadingValue);
   const dispatch = useDispatch();
 
-  const filteredOutContacts = fullContactsList.filter(contact =>
-    contact.name.toLowerCase().includes(filter)
-  );
+  useEffect(() => {
+    const controller = new AbortController();
+    dispatch(phonebookSlice.toggleLoading(true));
+
+    fetchContacts(dispatch, controller);
+
+    return () => {
+      controller.abort();
+    };
+  }, [dispatch]);
 
   return (
     <>
-      <ContactsList>
-        {Boolean(!filteredOutContacts.length) && (
-          <Contact>No contacts found.</Contact>
-        )}
-        {filteredOutContacts.map(({ id, name, number }, index) => (
-          <Contact key={id}>
-            <ContactInfo>
-              {index + 1}. {name}:
-            </ContactInfo>
-            <ContactInfo>{number}</ContactInfo>
-            <Button onClick={() => dispatch(delContact(id))}>Delete</Button>
-          </Contact>
-        ))}
-      </ContactsList>
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <ContactsList>
+          {Boolean(!filteredOutContacts.length) && (
+            <Contact>No contacts found.</Contact>
+          )}
+          {filteredOutContacts.map(({ id, name, phone }, index) => (
+            <Contact key={id}>
+              <ContactName>
+                {index + 1}. {name}:
+              </ContactName>
+              <ContactPhone>{phone}</ContactPhone>
+              <Button onClick={() => deleteContact(dispatch, id)}>
+                Delete
+              </Button>
+            </Contact>
+          ))}
+        </ContactsList>
+      )}
     </>
   );
 };

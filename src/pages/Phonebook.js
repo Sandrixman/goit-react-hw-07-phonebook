@@ -3,7 +3,7 @@ import ContactList from 'components/ContactList/ContactList';
 import Filter from 'components/Filter/Filter';
 
 export const Phonebook = () => {
-  return (
+   return (
     <>
       <h1>Phonebook</h1>
       <ContactForm />

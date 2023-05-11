@@ -11,8 +11,12 @@ export const Contact = styled.li`
   border-bottom: 1px solid;
 `;
 
-export const ContactInfo = styled.p`
-  min-width: 175px;
+export const ContactName = styled.p`
+  min-width: 250px;
+`;
+
+export const ContactPhone = styled.p`
+  min-width: 180px;
 `;
 
 export const Button = styled.button`

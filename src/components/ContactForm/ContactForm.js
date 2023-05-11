@@ -1,25 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/phonebookSlice/slice';
+import { takeContacts } from 'redux/phonebook/phonebookSelectors';
 import { Formik, Field, ErrorMessage } from 'formik';
-import { string, number, object } from 'yup';
+import { string, object } from 'yup';
 import { nanoid } from 'nanoid';
 import { toast } from 'react-toastify';
+import { postContact } from 'components/services/contactsApi';
 import { FormStyled, ErrorText, Label, Button } from './ContactForm.styled';
 
 const id = nanoid();
 
 const ContactForm = () => {
-  const contacts = useSelector(state => state.phonebook.contacts);
+  const contacts = useSelector(takeContacts);
   const dispatch = useDispatch();
 
   const initialValues = {
     name: '',
-    number: '',
+    phone: '',
   };
 
   const schema = object({
     name: string().required(),
-    number: number().required().positive().integer(),
+    phone: string().required(),
   });
 
   const FormError = ({ name }) => {
@@ -40,7 +41,7 @@ const ContactForm = () => {
       ? toast.error(`${values.name} is already in contacts`, {
           position: 'top-center',
         })
-      : dispatch(addContact({ ...values, id: nanoid() }));
+      : postContact(dispatch, values);
 
     resetForm();
   };
@@ -66,11 +67,11 @@ const ContactForm = () => {
           <Field
             id={id}
             type="tel"
-            name="number"
+            name="phone"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
           />
-          <FormError name="number" />
+          <FormError name="phone" />
           <Button type="submit">Add contact</Button>
         </FormStyled>
       </Formik>
