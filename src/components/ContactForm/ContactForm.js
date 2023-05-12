@@ -1,16 +1,16 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { takeContacts } from 'redux/phonebook/phonebookSelectors';
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operation';
 import { Formik, Field, ErrorMessage } from 'formik';
 import { string, object } from 'yup';
 import { nanoid } from 'nanoid';
 import { toast } from 'react-toastify';
-import { postContact } from 'components/services/contactsApi';
 import { FormStyled, ErrorText, Label, Button } from './ContactForm.styled';
 
 const id = nanoid();
 
 const ContactForm = () => {
-  const contacts = useSelector(takeContacts);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const initialValues = {
@@ -41,7 +41,7 @@ const ContactForm = () => {
       ? toast.error(`${values.name} is already in contacts`, {
           position: 'top-center',
         })
-      : postContact(dispatch, values);
+      : dispatch(addContact(values));
 
     resetForm();
   };

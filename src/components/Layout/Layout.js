@@ -1,10 +1,10 @@
-import { Phonebook } from 'pages/Phonebook';
+import { Outlet } from 'react-router-dom';
 import { Section } from './Layout.styled';
 
 const Layout = () => {
   return (
     <Section>
-      <Phonebook />
+      <Outlet />
     </Section>
   );
 };

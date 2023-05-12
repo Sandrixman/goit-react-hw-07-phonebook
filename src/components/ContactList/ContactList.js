@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { phonebookSelectors, phonebookSlice } from 'redux/phonebook/';
-import { fetchContacts, deleteContact } from 'components/services/contactsApi';
+import { deleteContact, fetchContacts } from 'redux/operation';
+import { selectFilteredOutContacts, selectIsLoading } from 'redux/selectors';
 import { Loading } from 'components/Loading/Loading';
 import {
   ContactsList,
@@ -12,17 +12,13 @@ import {
 } from './ContactList.styled';
 
 const ContactList = () => {
-  const filteredOutContacts = useSelector(
-    phonebookSelectors.takeFilteredOutContacts
-  );
-  const isLoading = useSelector(phonebookSelectors.isLoadingValue);
+  const filteredOutContacts = useSelector(selectFilteredOutContacts);
+  const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const controller = new AbortController();
-    dispatch(phonebookSlice.toggleLoading(true));
-
-    fetchContacts(dispatch, controller);
+    dispatch(fetchContacts(controller));
 
     return () => {
       controller.abort();
@@ -43,7 +39,7 @@ const ContactList = () => {
                 {index + 1}. {name}:
               </ContactName>
               <ContactPhone>{phone}</ContactPhone>
-              <Button onClick={() => deleteContact(dispatch, id)}>
+              <Button onClick={() => dispatch(deleteContact(id))}>
                 Delete
               </Button>
             </Contact>

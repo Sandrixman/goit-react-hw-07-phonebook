@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { findContact } from 'redux/phonebook/phonebookSlice';
-import { takeFilterValue } from 'redux/phonebook/phonebookSelectors';
+import { findContact } from 'redux/contactsSlice';
+import { selectFilterValue } from 'redux/selectors';
 import { nanoid } from 'nanoid';
 import { FilterWrapper } from './Filter.styled';
 
 const id = nanoid();
 
 const Filter = () => {
-  const filter = useSelector(takeFilterValue);
+  const filter = useSelector(selectFilterValue);
   const dispatch = useDispatch();
 
   const changeFilter = e => {
