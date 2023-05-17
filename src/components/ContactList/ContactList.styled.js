@@ -6,21 +6,7 @@ export const ContactsList = styled.ul`
   margin-top: 20px;
 `;
 
-export const Contact = styled.li`
+export const ListItem = styled.li`
   display: flex;
   border-bottom: 1px solid;
-`;
-
-export const ContactName = styled.p`
-  min-width: 250px;
-`;
-
-export const ContactPhone = styled.p`
-  min-width: 180px;
-`;
-
-export const Button = styled.button`
-  :hover {
-    background-color: red;
-  }
 `;

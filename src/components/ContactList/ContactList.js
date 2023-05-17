@@ -1,48 +1,36 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { deleteContact, fetchContacts } from 'redux/operation';
-import { selectFilteredOutContacts, selectIsLoading } from 'redux/selectors';
-import { Loading } from 'components/Loading/Loading';
-import {
-  ContactsList,
-  Contact,
-  ContactName,
-  ContactPhone,
-  Button,
-} from './ContactList.styled';
+import { useGetContactsQuery } from 'redux/contactsApi';
+import { useSelector } from 'react-redux';
+import { Contact } from 'components/Contact/Contact';
+import { ContactsList, ListItem } from './ContactList.styled';
 
 const ContactList = () => {
-  const filteredOutContacts = useSelector(selectFilteredOutContacts);
-  const isLoading = useSelector(selectIsLoading);
-  const dispatch = useDispatch();
+  const filter = useSelector(state => state.phonebook.filter);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    dispatch(fetchContacts(controller));
+  const { data, isLoading, isError } = useGetContactsQuery();
 
-    return () => {
-      controller.abort();
-    };
-  }, [dispatch]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error occurred while fetching contacts.</div>;
+  }
+
+  const filteredOutContacts = data.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <>
-      {isLoading && <Loading />}
-      {!isLoading && (
+      {filteredOutContacts && (
         <ContactsList>
-          {Boolean(!filteredOutContacts.length) && (
-            <Contact>No contacts found.</Contact>
+          {Boolean(filteredOutContacts.length === 0) && (
+            <h2>No contacts found.</h2>
           )}
-          {filteredOutContacts.map(({ id, name, phone }, index) => (
-            <Contact key={id}>
-              <ContactName>
-                {index + 1}. {name}:
-              </ContactName>
-              <ContactPhone>{phone}</ContactPhone>
-              <Button onClick={() => dispatch(deleteContact(id))}>
-                Delete
-              </Button>
-            </Contact>
+          {filteredOutContacts.map((contact, index) => (
+            <ListItem key={contact.id}>
+              <Contact contact={contact} index={index} />
+            </ListItem>
           ))}
         </ContactsList>
       )}

@@ -1,6 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts } from 'redux/selectors';
-import { addContact } from 'redux/operation';
+import { useGetContactsQuery, useAddContactMutation } from 'redux/contactsApi';
 import { Formik, Field, ErrorMessage } from 'formik';
 import { string, object } from 'yup';
 import { nanoid } from 'nanoid';
@@ -10,8 +8,8 @@ import { FormStyled, ErrorText, Label, Button } from './ContactForm.styled';
 const id = nanoid();
 
 const ContactForm = () => {
-  const contacts = useSelector(selectContacts);
-  const dispatch = useDispatch();
+  const [addContact] = useAddContactMutation();
+  const { data } = useGetContactsQuery();
 
   const initialValues = {
     name: '',
@@ -32,17 +30,19 @@ const ContactForm = () => {
     );
   };
 
-  const handleSubmit = (values, { resetForm }) => {
-    const isContactExists = contacts.some(
-      contact => contact.name === values.name
-    );
+  const handleSubmit = async (values, { resetForm }) => {
+    const isContactExists = data.some(contact => contact.name === values.name);
 
     isContactExists
       ? toast.error(`${values.name} is already in contacts`, {
           position: 'top-center',
         })
-      : dispatch(addContact(values));
+      : await addContact(values);
 
+    // error?.data &&
+    //   toast.error(`${error}`, {
+    //     position: 'top-center',
+    //   });
     resetForm();
   };
 
